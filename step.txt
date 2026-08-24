@@ -26,4 +26,15 @@ B7: Tạo repo github
 industrial-iot-monitoring
 
 B8: Kết nối local với github
-git remote add origin https://github.com/YOUR_USERNAME/industrial-iot-monitoring.git
+- git remote add origin https://github.com/YOUR_USERNAME/industrial-iot-monitoring.git
+- git remote -v => kiểm tra
+
+B8: Push project
+- git push -u origin main
+
+TASK 1 
+B1: git status
+
+B2: kiểm tra lịch sử commit
+- git log --oneline
+- git remote -v
