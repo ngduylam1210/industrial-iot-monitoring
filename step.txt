@@ -1,0 +1,29 @@
+TASK 0
+B1: Tạo project industrial-iot-monitoring
+
+B2: Tạo Git
+- git init
+- git status
+- git branch -M main => đổi branch mặc định thành main
+
+B3: Tạo .gitignore
+
+B4: Tạo README.md
+
+B5: Tạo docs
+industrial-iot-monitoring/
+│
+├── .gitignore
+├── README.md
+└── docs/PROJECT_SPEC.md
+
+B6: Commit
+- git add .
+- git commit -m "docs: initialize project specification"
+- git status
+
+B7: Tạo repo github
+industrial-iot-monitoring
+
+B8: Kết nối local với github
+git remote add origin https://github.com/YOUR_USERNAME/industrial-iot-monitoring.git
