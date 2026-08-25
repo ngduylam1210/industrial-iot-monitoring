@@ -38,3 +38,7 @@ B1: git status
 B2: kiểm tra lịch sử commit
 - git log --oneline
 - git remote -v
+
+B3: Tạo DECISIONS.md
+
+B4: Thiết kế kiến trúc hệ thống
