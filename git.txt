@@ -1,0 +1,4 @@
+git add .
+git commit -m "docs: add requirements and architecture templates"
+git push
+git log --oneline -5 : xem 5 commit gần nhất

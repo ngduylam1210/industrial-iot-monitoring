@@ -1,0 +1,1098 @@
+Tôi đang thực hiện một project portfolio kỹ thuật với tên:
+
+"Industrial IoT Monitoring & Predictive Maintenance System"
+
+Mục tiêu của project là xây dựng một hệ thống IoT công nghiệp thu nhỏ có khả năng giám sát một thiết bị quay/motor, thu thập dữ liệu cảm biến bằng STM32, truyền dữ liệu công nghiệp qua RS485/Modbus RTU đến ESP32, đưa dữ liệu lên backend thông qua Wi-Fi/MQTT, hiển thị trạng thái thiết bị và sử dụng Machine Learning để phát hiện trạng thái bất thường.
+
+PROJECT NÀY PHẢI ĐƯỢC DUY TRÌ NHẤT QUÁN TRONG SUỐT QUÁ TRÌNH PHÁT TRIỂN.
+
+AI KHÔNG ĐƯỢC TỰ Ý ĐỔI ĐỀ TÀI, ĐỔI MÔ HÌNH VẬT LÝ, ĐỔI KIẾN TRÚC, ĐỔI MCU, ĐỔI GIAO THỨC HOẶC ĐỀ XUẤT MỘT HỆ THỐNG KHÁC NẾU CHƯA ĐƯỢC TÔI CHO PHÉP.
+
+==================================================
+1. MỤC TIÊU CỦA PROJECT
+==================================================
+
+Project nhằm xây dựng một prototype Industrial IoT có các năng lực:
+
+- Embedded Systems
+- STM32
+- FreeRTOS
+- Sensor acquisition
+- Signal processing
+- Motor control
+- Encoder / RPM measurement
+- Current monitoring
+- Temperature monitoring
+- RS485
+- Modbus RTU
+- ESP32
+- Wi-Fi
+- MQTT
+- Backend
+- Database
+- Dashboard
+- Machine Learning
+- Anomaly Detection
+- Git/GitHub
+- System integration
+
+Project được xây dựng để phục vụ portfolio/CV cho định hướng:
+
+- Embedded Systems
+- Industrial IoT
+- Automation
+- Industrial Electronics
+
+Không được biến project thành một project AI thuần túy hoặc web thuần túy.
+
+Embedded và Industrial IoT là nền tảng chính.
+Machine Learning/AI là lớp phân tích dữ liệu phía trên hệ thống.
+
+==================================================
+2. MÔ HÌNH VẬT LÝ CỦA PROJECT
+==================================================
+
+Đây KHÔNG phải là hệ thống camera giao thông.
+
+Đây KHÔNG phải là hệ thống camera từ trên xuống.
+
+Đây KHÔNG phải là dây chuyền nhận diện sản phẩm bằng camera.
+
+Đây KHÔNG phải là conveyor belt là đối tượng chính.
+
+Đối tượng vật lý chính của project là:
+
+"MỘT CỤM MOTOR DC GIẢM TỐC CÓ ENCODER ĐƯỢC XÂY DỰNG THÀNH MỘT TEST BENCH THU NHỎ ĐỂ MÔ PHỎNG MỘT THIẾT BỊ QUAY TRONG MÔI TRƯỜNG CÔNG NGHIỆP."
+
+Có thể hiểu hệ thống như:
+
+Industrial rotating equipment
+        ↓
+Motor
+        ↓
+Mechanical load
+        ↓
+Sensors
+        ↓
+STM32
+        ↓
+RS485 / Modbus RTU
+        ↓
+ESP32 Gateway
+        ↓
+MQTT
+        ↓
+Backend
+        ↓
+Dashboard
+        ↓
+Machine Learning
+        ↓
+Anomaly Detection
+
+Motor là đối tượng được giám sát.
+
+Không được tự ý thay motor bằng conveyor, robot arm, camera inspection hoặc một hệ thống khác.
+
+==================================================
+3. MOTOR ĐƯỢC CHỌN
+==================================================
+
+Motor hiện tại được chọn:
+
+Brand:
+ZENG WHCD
+
+Model:
+GA25-370-1260-EN
+
+Cấu hình được chọn:
+
+- Voltage: 12V
+- Gear ratio: 45:1
+- No-load speed: 130 RPM ±10%
+- Rated load speed: 100 RPM ±10%
+- Rated current: 0.3A
+- Rated torque: 1 kg.cm
+- Stall current: 1.3A
+- Encoder: AB phase
+- Quantity: 1
+
+Đây là cấu hình MOTOR ĐÃ CHỌN.
+
+Không tự ý đổi sang motor 6V hoặc 24V.
+
+Không tự ý đổi sang motor tốc độ cao.
+
+Không mua motor thứ hai nếu không có yêu cầu kỹ thuật rõ ràng.
+
+Encoder AB của motor được sử dụng để đo:
+
+- RPM
+- Direction
+- Position/pulse information nếu cần
+
+LƯU Ý:
+
+Thông số PPR/CPR của encoder chưa được xác nhận.
+
+Không được tự ý giả định PPR/CPR.
+
+Khi cần thiết kế firmware encoder, phải đánh dấu thông số này là TBD và yêu cầu xác minh từ datasheet/shop trước khi cấu hình cuối cùng.
+
+==================================================
+4. MÔ HÌNH HOẠT ĐỘNG
+==================================================
+
+Motor được điều khiển bởi STM32 thông qua motor driver.
+
+Motor có:
+
+- Encoder AB
+- Temperature sensor
+- Current sensor
+
+Các dữ liệu chính:
+
+1. RPM
+2. Motor current
+3. Motor temperature
+
+Vibration monitoring có thể được bổ sung sau khi hệ thống cơ bản hoạt động ổn định.
+
+Vibration KHÔNG phải thành phần bắt buộc của prototype đầu tiên.
+
+Mục tiêu là tạo ra dữ liệu của motor ở:
+
+- Normal condition
+- Different speed
+- Different load
+- High current condition
+- Temperature variation
+- Abnormal operating condition
+
+Sau đó dùng dữ liệu này để xây dựng anomaly detection.
+
+==================================================
+5. NGUYÊN LÝ HOẠT ĐỘNG TỔNG THỂ
+==================================================
+
+Hệ thống hoạt động theo chuỗi:
+
+Motor
+↓
+Encoder + Current + Temperature
+↓
+STM32
+↓
+Signal acquisition
+↓
+Signal processing
+↓
+FreeRTOS tasks
+↓
+Data aggregation
+↓
+Modbus RTU registers
+↓
+RS485
+↓
+ESP32
+↓
+MQTT
+↓
+Backend
+↓
+Database
+↓
+Dashboard
+↓
+Machine Learning
+↓
+Anomaly Detection
+↓
+Alarm / Status
+
+STM32 là thiết bị điều khiển và xử lý thời gian thực.
+
+ESP32 là IoT Gateway.
+
+Backend là nơi xử lý dữ liệu cấp cao.
+
+Machine Learning không được đưa vào vòng điều khiển thời gian thực của motor.
+
+==================================================
+6. STM32
+==================================================
+
+STM32 là MAIN CONTROLLER.
+
+STM32 chịu trách nhiệm:
+
+- Sensor acquisition
+- Encoder measurement
+- RPM calculation
+- ADC measurement
+- Temperature processing
+- Current processing
+- Signal filtering
+- Motor control
+- PWM
+- Real-time tasks
+- Fault/basic threshold detection
+- Modbus RTU communication
+- FreeRTOS
+
+STM32 phải giữ các nhiệm vụ real-time.
+
+Không chuyển nhiệm vụ real-time của STM32 sang ESP32 chỉ vì ESP32 dễ lập trình hơn.
+
+==================================================
+7. FREERTOS
+==================================================
+
+FreeRTOS được sử dụng trên STM32.
+
+Các task có thể được tổ chức theo chức năng, ví dụ:
+
+- Sensor Task
+- Motor Control Task
+- Communication Task
+- Monitoring Task
+
+Cấu trúc task cuối cùng phải được quyết định dựa trên yêu cầu thực tế.
+
+Không tạo task chỉ để làm project phức tạp hơn.
+
+==================================================
+8. MOTOR CONTROL
+==================================================
+
+STM32 điều khiển motor thông qua:
+
+PWM
++
+Direction
+
+Motor driver nằm giữa STM32 và motor.
+
+Motor driver dự kiến:
+
+DRV8871
+
+Tuy nhiên:
+
+DRV8871 hiện là COMPONENT ĐỀ XUẤT, chưa được xem là đã mua/chốt hoàn toàn cho đến khi kiểm tra đúng module thực tế.
+
+Khi chọn driver phải phù hợp với:
+
+- Motor 12V
+- Rated current 0.3A
+- Stall current 1.3A
+- PWM control
+- Forward/reverse
+- STM32 3.3V logic
+
+Không tự ý thay bằng BTS7960 hoặc driver công suất rất lớn nếu không có lý do kỹ thuật.
+
+==================================================
+9. ENCODER
+==================================================
+
+Encoder:
+
+AB quadrature encoder.
+
+Encoder A và B được kết nối tới STM32.
+
+Mục đích:
+
+- RPM measurement
+- Direction detection
+- Pulse counting
+- Position information nếu cần
+
+Ưu tiên sử dụng Timer/Input Capture hoặc Encoder Mode của STM32 khi phù hợp.
+
+Không giả định encoder PPR/CPR khi chưa xác minh.
+
+==================================================
+10. CURRENT MONITORING
+==================================================
+
+Current sensor được dùng để đo dòng motor.
+
+Mục tiêu:
+
+- Theo dõi tải motor
+- Theo dõi current trend
+- Phát hiện trạng thái bất thường
+- Tạo feature cho Machine Learning
+
+Current data phải được STM32 thu thập và xử lý.
+
+Không chỉ hiển thị current.
+
+Dữ liệu current phải được đưa vào hệ thống monitoring.
+
+==================================================
+11. TEMPERATURE MONITORING
+==================================================
+
+Temperature sensor dùng để:
+
+- Theo dõi nhiệt độ motor
+- Phát hiện xu hướng nhiệt bất thường
+- Tạo feature cho anomaly detection
+
+STM32 chịu trách nhiệm acquisition và processing.
+
+==================================================
+12. RS485 / MODBUS RTU
+==================================================
+
+STM32 ↔ ESP32 sử dụng:
+
+RS485
++
+Modbus RTU
+
+STM32 đóng vai trò thiết bị cung cấp dữ liệu.
+
+ESP32 đọc dữ liệu thông qua Modbus RTU.
+
+Các dữ liệu có thể được map thành Modbus registers, ví dụ:
+
+- RPM
+- Current
+- Temperature
+- Motor status
+- Alarm status
+
+Register map cuối cùng phải được thiết kế và ghi lại thành tài liệu.
+
+Không tự ý thay Modbus RTU bằng CAN, Ethernet hoặc giao thức khác.
+
+==================================================
+13. ESP32
+==================================================
+
+ESP32 là IoT GATEWAY.
+
+ESP32 chịu trách nhiệm:
+
+- RS485
+- Modbus RTU master/client
+- Wi-Fi
+- MQTT
+- Network connection
+- Reconnection
+- Data forwarding
+
+ESP32 không thay thế STM32 trong các nhiệm vụ real-time.
+
+==================================================
+14. MQTT
+==================================================
+
+ESP32 gửi dữ liệu lên backend thông qua MQTT.
+
+Luồng:
+
+STM32
+↓
+Modbus RTU
+↓
+ESP32
+↓
+MQTT
+↓
+Backend
+
+MQTT payload có thể chứa:
+
+- timestamp
+- device_id
+- rpm
+- current
+- temperature
+- motor_state
+- alarm
+- anomaly-related data
+
+Cấu trúc payload phải được ghi lại khi implementation bắt đầu.
+
+==================================================
+15. BACKEND
+==================================================
+
+Backend có nhiệm vụ:
+
+- Receive telemetry
+- Validate data
+- Store data
+- Provide API
+- Provide data for dashboard
+- Handle alarm information
+- Interface with Machine Learning
+
+Backend không được điều khiển motor trực tiếp trong prototype ban đầu.
+
+Real-time motor control vẫn nằm ở STM32.
+
+==================================================
+16. DATABASE
+==================================================
+
+Database lưu historical telemetry.
+
+Các dữ liệu quan trọng:
+
+- Timestamp
+- RPM
+- Current
+- Temperature
+- Motor status
+- Alarm
+- Anomaly score nếu có
+
+Mục đích của database không chỉ để hiển thị dashboard.
+
+Historical data sẽ được dùng để:
+
+- Phân tích trend
+- Training dataset
+- Validation
+- Anomaly detection
+
+==================================================
+17. DASHBOARD
+==================================================
+
+Dashboard cần thể hiện:
+
+Real-time:
+
+- RPM
+- Current
+- Temperature
+- Motor status
+- Alarm
+
+Historical:
+
+- RPM trend
+- Current trend
+- Temperature trend
+
+AI/ML:
+
+- Anomaly status
+- Anomaly score nếu có
+- Event history
+
+Dashboard chỉ là lớp visualization.
+
+Không để dashboard trở thành phần lớn nhất của project.
+
+==================================================
+18. MACHINE LEARNING
+==================================================
+
+Machine Learning được sử dụng để:
+
+"PHÁT HIỆN BẤT THƯỜNG CỦA MOTOR DỰA TRÊN TELEMETRY."
+
+ML không phải phần điều khiển motor.
+
+Các feature có thể gồm:
+
+- RPM
+- Current
+- Temperature
+- RPM variation
+- Current variation
+- Temperature trend
+- RPM/current relationship
+
+Ví dụ:
+
+Normal:
+
+RPM ổn định
++
+Current ổn định
++
+Temperature bình thường
+
+Abnormal:
+
+RPM giảm
++
+Current tăng
++
+Temperature tăng
+
+ML có nhiệm vụ học pattern của trạng thái hoạt động và phát hiện deviation.
+
+==================================================
+19. CÁCH TIẾP CẬN MACHINE LEARNING
+==================================================
+
+Không bắt buộc phải dùng Deep Learning.
+
+Ưu tiên một mô hình ML vừa đủ cho prototype.
+
+Có thể bắt đầu bằng:
+
+- Statistical baseline
+- Threshold-based detection
+- Isolation Forest
+- One-Class classification
+- Các mô hình anomaly detection phù hợp khác
+
+Quy trình:
+
+Raw telemetry
+↓
+Cleaning
+↓
+Filtering
+↓
+Feature extraction
+↓
+Dataset
+↓
+Training
+↓
+Validation
+↓
+Anomaly detection
+↓
+Anomaly score
+↓
+Dashboard / Alarm
+
+Không được tự ý thêm Generative AI chỉ để gọi project là "AI".
+
+==================================================
+20. AI VS MACHINE LEARNING
+==================================================
+
+Trong project này:
+
+Embedded + IoT = nền tảng
+
+Machine Learning = phân tích tình trạng thiết bị
+
+AI/ML không được sử dụng như một từ khóa trang trí.
+
+Nếu có thêm AI Agent hoặc LLM trong tương lai, nó chỉ được bổ sung khi có use case thực tế, ví dụ:
+
+- Giải thích anomaly
+- Sinh báo cáo
+- Hỗ trợ technician
+- Tóm tắt lịch sử thiết bị
+
+Không được để LLM thay thế anomaly detection core.
+
+==================================================
+21. ANOMALY SCENARIOS
+==================================================
+
+Project cần tạo dữ liệu cho nhiều trạng thái.
+
+Normal:
+
+- Normal RPM
+- Normal load
+- Normal current
+- Normal temperature
+
+Abnormal scenarios có thể mô phỏng bằng:
+
+- Thay đổi tải cơ học
+- Giảm tốc độ
+- Tăng dòng
+- Tăng nhiệt
+- Quan hệ RPM/current bất thường
+
+Không được phá hỏng motor để tạo lỗi.
+
+Ưu tiên tạo controlled abnormal conditions an toàn.
+
+==================================================
+22. LUỒNG DỮ LIỆU HOÀN CHỈNH
+==================================================
+
+PHYSICAL LAYER
+
+Motor
+↓
+Encoder
+Current Sensor
+Temperature Sensor
+
+↓
+
+EMBEDDED LAYER
+
+STM32
++
+FreeRTOS
++
+Signal Processing
++
+Motor Control
+
+↓
+
+INDUSTRIAL COMMUNICATION
+
+RS485
++
+Modbus RTU
+
+↓
+
+IoT GATEWAY
+
+ESP32
++
+Wi-Fi
++
+MQTT
+
+↓
+
+BACKEND
+
+API
++
+Database
+
+↓
+
+DATA ANALYTICS
+
+Feature Extraction
++
+Machine Learning
++
+Anomaly Detection
+
+↓
+
+APPLICATION
+
+Dashboard
++
+Alarm
++
+Historical Analysis
+
+==================================================
+23. HARDWARE ĐÃ CÓ
+==================================================
+
+Đã có:
+
+- STM32 development board
+- ESP32 development board
+
+Không mua thêm MCU nếu không có yêu cầu kỹ thuật.
+
+==================================================
+24. MOTOR ĐÃ CHỌN
+==================================================
+
+Đã chọn:
+
+1 × ZENG WHCD GA25-370-1260-EN
+
+Configuration:
+
+- 12V
+- 45:1
+- 100 RPM rated load speed
+- 130 RPM no-load speed
+- 0.3A rated current
+- 1.3A stall current
+- 1 kg.cm rated torque
+- AB encoder
+
+==================================================
+25. HARDWARE CHƯA ĐƯỢC CHỐT
+==================================================
+
+Các component sau chưa được phép coi là final nếu chưa được xác nhận:
+
+- Motor driver
+- Current sensor
+- Temperature sensor
+- RS485 transceiver
+- 12V power supply
+- Mechanical load
+- Vibration sensor
+
+DRV8871 đang là motor-driver candidate, không phải component đã mua.
+
+Không được tự ý coi candidate là final component.
+
+==================================================
+26. HARDWARE DEVELOPMENT ORDER
+==================================================
+
+Thực hiện theo thứ tự:
+
+1. Motor
+2. Motor driver
+3. Power supply
+4. Encoder
+5. Current sensor
+6. Temperature sensor
+7. STM32
+8. RS485
+9. ESP32
+10. Mechanical load
+11. Optional vibration sensor
+
+Không mua toàn bộ linh kiện ngay lập tức.
+
+Mỗi component phải được kiểm tra compatibility trước khi mua.
+
+==================================================
+27. BUDGET
+==================================================
+
+Ngân sách phần cứng bổ sung dự kiến:
+
+Khoảng 1.5–2 triệu VND.
+
+Ưu tiên:
+
+- Tận dụng STM32 và ESP32 đã có
+- Module phổ biến
+- Linh kiện dễ mua tại Việt Nam
+- Không mua phần cứng dư thừa
+- Không mua sensor đắt tiền nếu chưa cần
+
+Không tối ưu bằng cách mua linh kiện rẻ nhất.
+
+Phải tối ưu theo:
+
+Cost
++
+Technical suitability
++
+Documentation
++
+Reliability
++
+Availability
+
+==================================================
+28. PROJECT ARCHITECTURE KHÔNG ĐƯỢC TỰ Ý THAY ĐỔI
+==================================================
+
+KIẾN TRÚC ĐÃ KHÓA:
+
+STM32
+↓
+RS485 / Modbus RTU
+↓
+ESP32
+↓
+Wi-Fi / MQTT
+↓
+Backend
+↓
+Database
+↓
+Dashboard
+↓
+Machine Learning / Anomaly Detection
+
+Vai trò:
+
+STM32 = Real-time Embedded Controller
+
+ESP32 = IoT Gateway
+
+Backend = Data/Application Layer
+
+ML = Condition/Anomaly Analysis
+
+==================================================
+29. CÁC ĐIỀU AI KHÔNG ĐƯỢC LÀM
+==================================================
+
+Không được:
+
+1. Tự ý đổi motor thành conveyor.
+
+2. Tự ý thêm camera làm thành phần chính.
+
+3. Tự ý đổi STM32 thành ESP32 làm main controller.
+
+4. Tự ý bỏ STM32.
+
+5. Tự ý đổi RS485/Modbus RTU thành CAN/Ethernet.
+
+6. Tự ý bỏ ESP32.
+
+7. Tự ý đưa MQTT trực tiếp vào STM32 nếu không có lý do rõ ràng.
+
+8. Tự ý biến project thành web application.
+
+9. Tự ý biến project thành AI camera project.
+
+10. Tự ý thêm PLC chỉ để làm project "công nghiệp hơn".
+
+11. Tự ý mua thêm rất nhiều sensor.
+
+12. Tự ý đổi motor đã chọn.
+
+13. Tự ý giả định thông số encoder chưa được xác minh.
+
+14. Tự ý chọn linh kiện chỉ vì chúng phổ biến.
+
+15. Tự ý redesign architecture.
+
+==================================================
+30. QUY TẮC CHỌN LINH KIỆN
+==================================================
+
+Khi đề xuất component mới, AI phải kiểm tra:
+
+1. Voltage compatibility
+2. Current capability
+3. Logic-level compatibility
+4. Interface compatibility
+5. Electrical protection
+6. STM32 compatibility
+7. ESP32 compatibility
+8. Availability
+9. Cost
+10. Documentation
+
+AI phải giải thích ngắn gọn:
+
+- Component này dùng để làm gì?
+- Nó kết nối với component nào?
+- Thông số nào khiến nó phù hợp?
+- Có giới hạn gì?
+- Có cần component bổ sung không?
+
+Không được chỉ nói:
+
+"Component này phù hợp."
+
+==================================================
+31. QUY TẮC THIẾT KẾ SƠ ĐỒ
+==================================================
+
+Trước khi viết code, phải xác định:
+
+- Power architecture
+- Signal architecture
+- Pin mapping
+- Communication interfaces
+- Sensor interfaces
+- Motor driver interface
+- Encoder interface
+- Grounding
+- Protection
+
+Không được viết firmware dựa trên pin mapping giả định.
+
+Nếu chưa xác định pin:
+
+TBD
+
+Không được tự ý chọn pin mà không thông báo.
+
+==================================================
+32. QUY TẮC LÀM VIỆC VỚI AI
+==================================================
+
+AI phải làm việc theo từng bước.
+
+Trước khi bắt đầu task:
+
+1. Đọc project context này.
+2. Xác định project architecture.
+3. Xác định current project state.
+4. Xác định component nào đã locked.
+5. Xác định component nào còn TBD.
+6. Chỉ thực hiện task hiện tại.
+
+Không tự ý nhảy sang task khác.
+
+==================================================
+33. KHI AI KHÔNG BIẾT THÔNG TIN
+==================================================
+
+KHÔNG ĐƯỢC ĐOÁN.
+
+Nếu thiếu thông số:
+
+- ghi TBD
+- yêu cầu xác minh
+- hoặc đề xuất cách kiểm tra
+
+Đặc biệt với:
+
+- Encoder PPR/CPR
+- Motor electrical specifications
+- Driver pinout
+- Sensor output voltage
+- Power requirements
+
+==================================================
+34. SOURCE OF TRUTH
+==================================================
+
+Git repository và project documentation là nguồn trạng thái chính.
+
+Các file quan trọng:
+
+docs/PROJECT_SPEC.md
+docs/REQUIREMENTS.md
+docs/ARCHITECTURE.md
+docs/DECISIONS.md
+docs/PROJECT_STATE.md
+docs/AI_CONTEXT.md
+docs/AI_HANDOFF.md
+docs/HARDWARE.md
+docs/SIGNAL_MAP.md
+hardware/bom/BOM.md
+
+Nếu conversation trước đó mâu thuẫn với documentation:
+
+Ưu tiên documentation mới nhất đã được commit.
+
+Không tự ý thay đổi documentation để phù hợp với câu trả lời của AI.
+
+==================================================
+35. AI HANDOFF
+==================================================
+
+Project có thể được phát triển bằng:
+
+- ChatGPT
+- Claude
+- Gemini
+
+AI mới phải có khả năng tiếp tục project mà không cần biết toàn bộ conversation cũ.
+
+Khi tiếp quản:
+
+1. Đọc AI_HANDOFF.md
+2. Đọc PROJECT_STATE.md
+3. Đọc AI_CONTEXT.md
+4. Đọc ARCHITECTURE.md
+5. Đọc HARDWARE.md
+6. Đọc DECISIONS.md
+7. Kiểm tra source code nếu đã có
+8. Xác định current task
+
+Không restart project.
+
+Không redesign project.
+
+Không tự ý đổi architecture.
+
+==================================================
+36. CÁCH TRẢ LỜI KHI LÀM VIỆC VỚI TÔI
+==================================================
+
+Tôi muốn thực hiện project từng bước.
+
+Khi hướng dẫn:
+
+- Chỉ đưa các bước cần làm ở task hiện tại.
+- Không tạo hàng loạt file không cần thiết.
+- Chỉ tạo file khi thực sự cần.
+- Khi có terminal command, giải thích ngắn gọn command đó làm gì.
+- Không yêu cầu commit cho mọi thay đổi nhỏ.
+- Chỉ commit khi hoàn thành một milestone hoặc một thay đổi có ý nghĩa.
+- Không mua linh kiện nếu chưa xác định compatibility.
+- Khi chọn linh kiện, ưu tiên linh kiện thực tế có thể mua tại Việt Nam.
+- Khi có nhiều lựa chọn, chọn một phương án chính thay vì đưa quá nhiều lựa chọn.
+
+==================================================
+37. MỤC TIÊU CUỐI CÙNG
+==================================================
+
+Kết quả cuối cùng phải là một working prototype:
+
+Motor
+↓
+Sensors
+↓
+STM32 + FreeRTOS
+↓
+Motor Control
+↓
+RS485 / Modbus RTU
+↓
+ESP32
+↓
+Wi-Fi / MQTT
+↓
+Backend
+↓
+Database
+↓
+Dashboard
+↓
+Machine Learning
+↓
+Anomaly Detection
+↓
+Alarm / Monitoring
+
+Project phải có khả năng chứng minh:
+
+Embedded firmware
++
+Real-time system
++
+Motor control
++
+Industrial communication
++
+IoT
++
+Backend
++
+Data processing
++
+Machine Learning
++
+System integration
+
+Đây là một project kỹ thuật tích hợp để đưa vào CV.
+
+Không đánh giá project dựa trên số lượng linh kiện.
+
+Ưu tiên:
+
+"Ít component nhưng hoạt động thật, có kiến trúc rõ ràng, có dữ liệu thật, có test và có documentation."
+
+==================================================
+38. TASK KHI TIẾP QUẢN
+==================================================
+
+Trước tiên hãy:
+
+1. Xác nhận bạn đã hiểu mô hình vật lý.
+2. Xác nhận architecture.
+3. Liệt kê những component đã LOCKED.
+4. Liệt kê những component vẫn TBD.
+5. Không đề xuất architecture mới.
+6. Không mua linh kiện.
+7. Không viết code.
+
+Sau đó hãy hỏi tôi task hiện tại là gì hoặc đọc PROJECT_STATE.md để tiếp tục từ đúng vị trí.
